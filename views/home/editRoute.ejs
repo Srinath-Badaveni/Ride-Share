@@ -1,0 +1,58 @@
+<% layout('./layouts/boilerPlate') -%>
+
+<section class="container d-flex justify-content-center mt-5">
+  <div class="col-md-6">
+    <h2 class="mb-4 text-center">Edit Your Route</h2>
+    <form
+      id="add-route-form"
+      class="d-flex flex-column needs-validation"
+      method="POST"
+      action="/route/edit/<%=ride._id%>?_method=PUT"
+      novalidate
+    >
+      <div class="mb-3">
+        <input
+          type="text"
+          class="form-control"
+          name="route[startLocation]"
+          id="new-start-location"
+          placeholder="Start Location"
+          value="<%=ride.startLocation%>"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <input
+          type="text"
+          class="form-control"
+          name="route[destinationLocation]"
+          id="new-destination-location"
+          value="<%=ride.destinationLocation%>"
+          placeholder="Destination Location"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <input type="time" class="form-control" name="route[time]" value="<%=ride.time%>" id="new-time" required />
+      </div>
+      <div class="mb-3">
+        <input type="date" class="form-control" name="route[date]" value="<%=ride.date%>" id="new-date" required />
+      </div>
+      <div class="mb-3">
+        <input
+          type="number"
+          class="form-control"
+          id="new-seats"
+          name="route[seats]"
+          value="<%=ride.seats%>"
+          placeholder="Available Seats"
+          required
+          min="1"
+        />
+      </div>
+      <div>
+        <button type="submit" class="btn btn-success w-100">Add</button>
+      </div>
+    </form>
+  </div>
+</section>

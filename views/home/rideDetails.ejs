@@ -1,0 +1,57 @@
+<% layout('./layouts/boilerPlate') -%>
+
+<body>
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Ride Details</h1>
+
+        <!-- Ride Details -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Ride Information</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>From:</strong> <%= ride.startLocation %></p>
+                <p><strong>To:</strong> <%= ride.destinationLocation %></p>
+                <% const options = { day: '2-digit', month: 'long' }; %>
+                <p><strong>Date:</strong> <%= ride.date.toLocaleDateString('en-US', options) %></p>
+                <p><strong>Time:</strong> <%= ride.time %></p>
+                <p><strong>Seats Available:</strong> <%= ride.seats %></p>
+            </div>
+        </div>
+
+        <!-- Booking Details -->
+        <div class="card">
+            <div class="card-header">
+                <h4>Bookings</h4>
+            </div>
+            <div class="card-body">
+                <% if (ride.bookings) { %>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Passenger Name</th>
+                                <th>Email</th>
+                                <th>Contact Number</th>
+                                <th>Seats Booked</th>
+                                <!-- <th>Booking Date</th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for(booking of ride.bookings) { %>
+                                <tr>
+                                    <td><%= booking.name %></td>
+                                    <td><%= booking.email %></td>
+                                    <td><%= booking.phone%></td>
+                                    <td><%= booking.seatsBooked %></td>
+                                </tr>
+                            <% }; %>
+                        </tbody>
+                    </table>
+                <% } else { %>
+                    <p>No bookings yet.</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+</body>

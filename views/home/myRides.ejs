@@ -1,0 +1,29 @@
+<% layout('./layouts/boilerPlate') -%>
+
+<body>
+    <section class="container mt-5">
+        <h2 class="mb-4 text-center">My Rides</h2>
+        <div class="row" id="ride-list">
+          <%for (ride of Routes){%>
+          <div class="col-md-4 mb-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5>
+                  <%=ride.startLocation%> to <%=ride.destinationLocation%>
+                </h5>
+                <% const options = { day: '2-digit', month: 'long' }; %>
+                <p>
+                  Date: <%= ride.date.toLocaleDateString('en-US', options) %>
+                </p>
+                <p class="card-text">Time: <%=ride.time%></p>
+                <p class="card-text">Available Seats: <%=ride.seats%></p>
+                <a href="/route/edit/<%=ride._id%>" class="btn link"> Edit </a>
+                <a href="/route/details/<%=ride._id%>" class="btn link">Details </a>
+                <a href="/route/delete/<%=ride._id%>" class="btn link">Delete</a>
+              </div>
+            </div>
+          </div>
+          <%}%>
+        </div>
+      </section>
+</body>

@@ -1,0 +1,42 @@
+<% layout('./layouts/boilerPlate') -%>
+
+<body>
+    <div class="container mt-5">
+        <h1>Book Now</h1>
+        <hr>
+        <h2>Ride Details</h2>
+        <ul class="list-group">
+            <li class="list-group-item"><strong>Start Location:</strong> <%= ride.startLocation %></li>
+            <li class="list-group-item"><strong>Destination Location:</strong> <%= ride.destinationLocation %></li>
+            <% const options = { day: '2-digit', month: 'long' }; %>
+            <li class="list-group-item"><strong>Date:</strong> <%= ride.date.toLocaleDateString('en-US', options) %></li>
+            <li class="list-group-item"><strong>Time:</strong> <%= ride.time %></li>
+            <li class="list-group-item"><strong>Available Seats:</strong> <%= ride.seats %></li>
+        </ul>
+
+        <hr>
+
+        <h2>User Information</h2>
+        <p><strong>Name:</strong> <%=ride.owner.username%></p>
+        <p><strong>Rating:</strong> 5 Star</p>
+        <%if(ride.seats) {%>
+        <h2>Booking Form</h2>
+        <form class="needs-validation" action="/book-now/<%= ride.id %>/conform" method="POST" novalidate>
+            <input type="hidden" name="rideId" value="<%= ride.id %>">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" name="name" class="form-control" required>
+                <label for="name">Contact Number</label>
+                <input type="number" name="phone" class="form-control" required>
+                <label for="email">Email</label>
+                <input type="" class="form-control" name="email" value="<%= currUser.email %>" readonly>
+                <label for="seats">Number of Seats:</label>
+                <input type="number" class="form-control" id="seats" name="seatsBooked" min="1" max="<%=ride.seats%>" required>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-primary">Confirm Booking</button>
+        </form>
+        <%}%>
+        <br>
+    </div>
+</body>

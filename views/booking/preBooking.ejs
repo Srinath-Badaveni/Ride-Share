@@ -1,0 +1,30 @@
+<% layout('./layouts/boilerPlate') -%>
+
+<body>
+      <h2>Conform Your Details : </h2>
+        <form class="needs-validation" action="/book-now/<%= ride.id %>" method="POST" novalidate>
+            <input type="hidden" name="rideId" value="<%= ride.id %>">
+            <div class="form-group">
+                <label for="name">Your Name</label>
+                <input type="text" name="booking[name]" value="<%=name%>" class="form-control" required readonly>
+                <label for="name">Start Location</label>
+                <input type="text" name="booking[startLocation]" value="<%=ride.startLocation%>" class="form-control" required readonly>
+                <label for="name">Destination Location</label>
+                <input type="text" name="booking[destinationLocation]" value="<%=ride.destinationLocation%>" class="form-control" required readonly>
+                <label for="name">Date</label>
+                <input type="text" name="booking[date]" value="<%=ride.date%>" class="form-control" required readonly>
+                <label for="name">Time</label>
+                <input type="text" name="booking[time]" value="<%=ride.time%>" class="form-control" required readonly>
+                <label for="email">Email</label>
+                <input type="" class="form-control" name="booking[email]" value="<%=email%>" readonly>
+                <label for="name">Contact Number</label>
+                <input type="number" name="booking[phone]" value="<%=phone%>" class="form-control" required readonly>
+                <label for="seats">Number of Seats:</label>
+                <input type="number" class="form-control" value="<%=seatsBooked%>"  id="seats" name="booking[seatsBooked]" min="1" max="<%=ride.seats%>" required readonly>
+                <label for="name">Total Cost (&#8377;)</label>
+                <input type="text" name="booking[price]" value="<%=seatsBooked*ride.price %>" class="form-control" required readonly>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-primary">Confirm Booking</button>
+        </form>
+</body>

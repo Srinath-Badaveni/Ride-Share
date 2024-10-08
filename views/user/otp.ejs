@@ -1,0 +1,22 @@
+<% layout('./layouts/boilerPlate') -%>
+
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Email Verification</h2>
+        <p class="text-center">Please enter the OTP sent to your email to verify your account.</p>
+    
+        <form action="/user/verify-otp" method="POST" class="mt-4">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" value="<%=email%>" placeholder="Enter your email" required readonly>
+          </div>
+    
+          <div class="mb-3">
+            <label for="otp" class="form-label">OTP</label>
+            <input type="number" class="form-control" id="otp" name="otp" placeholder="Enter your OTP" required>
+          </div>
+    
+          <button type="submit" class="btn btn-primary">Verify</button>
+        </form>
+      </div>
+</body>

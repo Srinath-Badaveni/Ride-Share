@@ -1,0 +1,41 @@
+<% layout('./layouts/boilerPlate') -%>
+
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">My Bookings</h2>
+        
+        <% if (myBookings) { %>
+            <%let i = 0 %>
+          <table class="table table-bordered table-hover mt-4">
+            <thead class="table-dark">
+              <tr>
+                <th>#</th>
+                <th>Booking ID</th>
+                <th>Date</th>
+                <th>Start</th>
+                <th>Destination</th>
+                <th>Cancel</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%for(ride of myBookings){ %>
+                <tr>
+                  <td><%= i+1 %></td>
+                  <td><a href="/book-now/<%= ride._id %>"><%= bookingId[i]%></a></td>
+                  <td><%= new Date(ride.date).toLocaleDateString() %></td>
+                  <td><%= ride.startLocation%></td>
+                  <td><%= ride.destinationLocation%></td>
+                  
+                  <td><a href="/book-now/<%= ride._id %>/delete/<%=bookingId[i++]%>">Cancel</a></td>
+                </tr>
+              <% }%>
+            </tbody>
+          </table>
+        <% } else { %>
+          <div class="alert alert-warning text-center mt-4">
+            No bookings found.
+          </div>
+        <% } %>
+        
+      </div>
+</body>
