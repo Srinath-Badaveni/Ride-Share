@@ -5,15 +5,18 @@
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
 }
+.mybox{
+  display: flex;
+  justify-content: center; /* Aligns items horizontally */
+  align-items: center; /* Aligns items vertically */
+  height: 100vh;
+}
 .wrapper{
   overflow: hidden;
   max-width: 390px;
   background: #fff;
   padding: 30px;
   border-radius: 15px;
-  margin-left: 35%;
-  margin-top: 5%;
-  margin-bottom: 2%;
   box-shadow: 0px 15px 20px rgba(0,0,0,0.1);
 }
 .wrapper .title-text{
