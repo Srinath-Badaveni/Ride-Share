@@ -90,23 +90,23 @@ module.exports.conformBooking = async (req, res) => {
     <h4><b>Contact Number</b>: ${newBooking.phone}</h4>
     <h4><b>seatsBooked</b>: ${newBooking.seatsBooked}</h4>`,
       };
-
-      const info = await sendEmail(customerMailOptions); // Wait for the email to be sent
-      const info1 = await sendEmail(sellerMailOptions);
+      if (new Date() < user[0].tempSeat.expTime) {
+        const info = await sendEmail(customerMailOptions); // Wait for the email to be sent
+        const info1 = await sendEmail(sellerMailOptions);
+      }
       console.log("Email sent info:", info);
       console.log("Email sent info:", info1);
-      if (new Date < user[0].tempSeat.expTime) {
+      if (new Date() < user[0].tempSeat.expTime) {
         await ride.save();
         await newBooking.save();
       } else {
-        ride.seats = ride.seats + newBooking.seatsBooked;
-        await ride.save();
-        return res.send("some error occured Plz try again later");
+        const msg = "Session timeout Please try again"
+        return res.render("error/emailerror.ejs",{msg});
       }
       res.render("booking/conform.ejs", { newBooking });
     } catch (error) {
-      return res.send("some error occured in email");
-      // Handle the error as needed
+      const msg = "Some error occured in network conneciton"
+      return res.render("error/emailerror.ejs",{msg});
     }
   })();
 };
