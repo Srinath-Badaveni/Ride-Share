@@ -1,12 +1,42 @@
 const Route = require("../models/route");
+const Booking = require("../models/bookings")
 
 module.exports.index = async (req, res) => {
   const rides = await Route.find({});
   let currentDate = new Date();
   const Routes = rides.filter(async (ride) => {
+    console.log(ride._id)
+    const rideId = '670662c29e52f08d4db6d56f'
     if (ride.date < currentDate) {
       return await Route.findByIdAndDelete(ride._id);
-    } else {
+    }
+     else if (ride.tempBookings) {
+      // Variable to track if we need to update the ride
+      let seatsToAdd = 0;
+
+      // Array to collect expired booking IDs for removal
+      const expiredBookingIds = [];
+      // Check each booking for expiration
+      for (let booking of ride.tempBookings) {
+        if (currentDate > booking.expTime) {
+          seatsToAdd += booking.seats; // Add back expired seats
+          expiredBookingIds.push(booking._id); // Collect expired booking IDs
+        }
+      }
+      if (expiredBookingIds.length > 0) {
+        ride.seats += seatsToAdd;
+
+        for (let i = ride.tempBookings.length - 1; i >= 0; i--) {
+          if (expiredBookingIds.includes(ride.tempBookings[i]._id)) {
+            ride.tempBookings.splice(i, 1);
+          }
+        }
+      }
+      // Save the updated ride document with new seats
+      await ride.save();
+      console.log("Expired bookings removed and seats updated");
+    }
+     else {
       return ride.date > currentDate;
     }
   });
@@ -69,6 +99,7 @@ module.exports.RideDetails = async (req, res) => {
 module.exports.deleteRide = async (req, res) => {
   const { id } = req.params;
   const ride = await Route.findByIdAndDelete(id);
+  await Booking.deleteMany({_id: {$in:ride.bookings}})
   req.flash("success", "route deleted successfully");
   res.redirect(`/route/${req.user._id}`);
 };

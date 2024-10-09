@@ -42,6 +42,14 @@ const routeSchema = new mongoose.Schema(
         ref: "Booking",
       },
     ],
+    tempBookings:[{
+        seats:{
+          type: Number
+        },
+        expTime: {
+          type:Date
+        }
+    }]
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt fields

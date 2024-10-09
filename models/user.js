@@ -19,6 +19,14 @@ const userSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  tempSeat:{
+    seats:{
+      type: Number
+    },
+    expTime: {
+      type:Date
+    }
+  },
 });
 
 userSchema.plugin(passportLocalMongoose);

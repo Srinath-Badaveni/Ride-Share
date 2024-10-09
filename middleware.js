@@ -2,6 +2,16 @@ const ExpressError = require("./utils/expressError.js");
 const { listingSchema, reviewSchema } = require("./schema.js");
 const { model } = require("mongoose");
 const Route = require("./models/route.js");
+var nodemailer = require("nodemailer");
+
+
+var transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.MY_EMAIL,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 module.exports.isLoggedIn = (req, res, next) => {
   if (!req.isAuthenticated()) {
@@ -40,3 +50,17 @@ module.exports.checkExpiration = async (req, res, next) => {
   }
   next();
 };
+
+module.exports.sendEmail = async(MailOptions)=> {
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(MailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        reject(error); // Reject the promise if there's an error
+      } else {
+        console.log("Email sent: " + info.response);
+        resolve(info); // Resolve the promise with the info if successful
+      }
+    });
+  });
+}
