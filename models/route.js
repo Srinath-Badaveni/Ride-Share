@@ -1,7 +1,7 @@
 const { required, string } = require("joi");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const Booking = require("./bookings")
+const Booking = require("./bookings");
 
 const routeSchema = new mongoose.Schema(
   {
@@ -27,7 +27,7 @@ const routeSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    price:{
+    price: {
       type: Number,
       required: true,
     },
@@ -41,26 +41,30 @@ const routeSchema = new mongoose.Schema(
         ref: "Booking",
       },
     ],
-    tempBookings:[{
-        seats:{
-          type: Number
+    tempBookings: [
+      {
+        userMail: {
+          type: String,
+        },
+        seats: {
+          type: Number,
         },
         expTime: {
-          type:Date
-        }
-    }]
+          type: Date,
+        },
+      },
+    ],
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt fields
   }
 );
 
-routeSchema.post("findOneAndDelete", async(route)=>{
-    if(route){
-      await Booking.deleteMany({_id: {$in:route.bookings}})
-    }
-  })
-
+routeSchema.post("findOneAndDelete", async (route) => {
+  if (route) {
+    await Booking.deleteMany({ _id: { $in: route.bookings } });
+  }
+});
 
 // Model creation
 const Route = mongoose.model("Route", routeSchema);

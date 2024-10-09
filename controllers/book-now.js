@@ -24,11 +24,12 @@ module.exports.booking = async (req, res) => {
   const ride = await Route.findById(rideId).populate("owner");
   const user = await User.find({ email: email });
   const tempBooking = {
+    userMail: email,
     seats: seatsBooked,
     expTime: Date.now() + 5 * 60 * 1000,
   };
   ride.tempBookings.push(tempBooking);
-  console.log(ride);
+  console.log(ride.tempBookings);
   user[0].tempSeat.seats = seatsBooked;
   user[0].tempSeat.expTime = Date.now() + 5 * 60 * 1000;
   ride.seats = ride.seats - seatsBooked;
@@ -90,23 +91,26 @@ module.exports.conformBooking = async (req, res) => {
     <h4><b>Contact Number</b>: ${newBooking.phone}</h4>
     <h4><b>seatsBooked</b>: ${newBooking.seatsBooked}</h4>`,
       };
-      if (new Date() < user[0].tempSeat.expTime) {
-        const info = await sendEmail(customerMailOptions); // Wait for the email to be sent
-        const info1 = await sendEmail(sellerMailOptions);
-      }
+      const info = await sendEmail(customerMailOptions); // Wait for the email to be sent
+      const info1 = await sendEmail(sellerMailOptions);
       console.log("Email sent info:", info);
       console.log("Email sent info:", info1);
       if (new Date() < user[0].tempSeat.expTime) {
+        for (let booking of ride.tempBookings) {
+          if (booking.userMail === newBooking.email) {
+            ride.tempBookings.splice(booking, 1);
+          }
+        }
         await ride.save();
         await newBooking.save();
       } else {
-        const msg = "Session timeout Please try again"
-        return res.render("error/emailerror.ejs",{msg});
+        const msg = "Session timeout Please try again";
+        return res.render("error/emailerror.ejs", { msg });
       }
       res.render("booking/conform.ejs", { newBooking });
     } catch (error) {
-      const msg = "Some error occured in network conneciton"
-      return res.render("error/emailerror.ejs",{msg});
+      const msg = "Some error occured in network conneciton";
+      return res.render("error/emailerror.ejs", { msg });
     }
   })();
 };
