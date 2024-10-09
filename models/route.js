@@ -26,7 +26,6 @@ const routeSchema = new mongoose.Schema(
     seats: {
       type: Number,
       required: true,
-      min: 1,
     },
     price:{
       type: Number,
