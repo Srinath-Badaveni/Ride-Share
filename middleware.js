@@ -4,7 +4,6 @@ const { model } = require("mongoose");
 const Route = require("./models/route.js");
 var nodemailer = require("nodemailer");
 
-
 var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -45,13 +44,13 @@ module.exports.checkExpiration = async (req, res, next) => {
   const ride = await Route.findById(id).populate("owner");
   const currentTime = new Date();
   if (currentTime > ride.date) {
-      await Route.findByIdAndDelete(id)
-      return res.status(404).send('This route has expired.');
+    await Route.findByIdAndDelete(id);
+    return res.status(404).send("This route has expired.");
   }
   next();
 };
 
-module.exports.sendEmail = async(MailOptions)=> {
+module.exports.sendEmail = async (MailOptions) => {
   return new Promise((resolve, reject) => {
     transporter.sendMail(MailOptions, (error, info) => {
       if (error) {
@@ -63,4 +62,12 @@ module.exports.sendEmail = async(MailOptions)=> {
       }
     });
   });
-}
+};
+
+module.exports.convertToMinutes = (timeString) => {
+  // Split the time string into hours and minutes
+  let [hours, minutes] = timeString.split(":").map(Number);
+
+  // Convert hours to minutes and add the minutes
+  return hours * 60 + minutes;
+};

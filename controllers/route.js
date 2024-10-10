@@ -1,12 +1,14 @@
 const Route = require("../models/route");
-const Booking = require("../models/bookings")
+const Booking = require("../models/bookings");
+const { convertToMinutes } = require("../middleware");
 
 module.exports.index = async (req, res) => {
   const rides = await Route.find({});
   let currentDate = new Date();
+  currentDate.setMinutes(currentDate.getMinutes() + 330);
   const Routes = rides.filter(async (ride) => {
-    console.log(ride._id)
-    const rideId = '670662c29e52f08d4db6d56f'
+    const rideDate = ride.date
+    rideDate.setMinutes(rideDate.getMinutes() + convertToMinutes(ride.time));
     if (ride.date < currentDate) {
       return await Route.findByIdAndDelete(ride._id);
     }
@@ -46,6 +48,8 @@ module.exports.index = async (req, res) => {
 
 module.exports.addNew = async (req, res) => {
   let sampleRoute = new Route(req.body.route);
+  console.log(sampleRoute.date)
+  console.log(sampleRoute.time)
   let currentDate = new Date();
   let maxDate = new Date();
   maxDate.setDate(currentDate.getDate() + 5);

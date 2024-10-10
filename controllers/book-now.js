@@ -50,7 +50,6 @@ module.exports.conformBooking = async (req, res) => {
   const ride = await Route.findById(rideId).populate("owner");
   const user = await User.find({ email: newBooking.email });
   ride.bookings.push(newBooking);
-  var track = 0;
   async function sendEmail(customerMailOptions) {
     return new Promise((resolve, reject) => {
       transporter.sendMail(customerMailOptions, (error, info) => {
@@ -91,10 +90,10 @@ module.exports.conformBooking = async (req, res) => {
     <h4><b>Contact Number</b>: ${newBooking.phone}</h4>
     <h4><b>seatsBooked</b>: ${newBooking.seatsBooked}</h4>`,
       };
-      const info = await sendEmail(customerMailOptions); // Wait for the email to be sent
-      const info1 = await sendEmail(sellerMailOptions);
-      console.log("Email sent info:", info);
-      console.log("Email sent info:", info1);
+      if (new Date() < user[0].tempSeat.expTime) {
+        await sendEmail(customerMailOptions); // Wait for the email to be sent
+        await sendEmail(sellerMailOptions);
+      }
       if (new Date() < user[0].tempSeat.expTime) {
         for (let booking of ride.tempBookings) {
           if (booking.userMail === newBooking.email) {
