@@ -12,7 +12,8 @@
                 <label for="name">Destination Location</label>
                 <input type="text" name="booking[destinationLocation]" value="<%=ride.destinationLocation%>" class="form-control" required readonly>
                 <label for="name">Date</label>
-                <input type="text" name="booking[date]" value="<%=ride.date%>" class="form-control" required readonly>
+                <% const options = { day: '2-digit', month: 'long' }; %>
+                <input type="text" name="booking[date]" value="<%= ride.date.toLocaleDateString('en-US', options) %>" class="form-control" required readonly>
                 <label for="name">Time</label>
                 <input type="text" name="booking[time]" value="<%=ride.time%>" class="form-control" required readonly>
                 <label for="email">Email</label>

@@ -42,8 +42,9 @@ module.exports.isOwner = async (req, res, next) => {
 module.exports.checkExpiration = async (req, res, next) => {
   const { id } = req.params;
   const ride = await Route.findById(id).populate("owner");
-  const currentTime = new Date();
-  if (currentTime > ride.date) {
+  let currentDate = new Date();
+  currentDate.setMinutes(currentDate.getMinutes());
+  if (currentDate > ride.date) {
     await Route.findByIdAndDelete(id);
     return res.status(404).send("This route has expired.");
   }

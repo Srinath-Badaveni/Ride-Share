@@ -33,10 +33,24 @@
         />
       </div>
       <div class="mb-3">
-        <input type="time" class="form-control" name="route[time]" value="<%=ride.time%>" id="new-time" required />
+        <input
+          type="time"
+          class="form-control"
+          name="route[time]"
+          value="<%=ride.time%>"
+          id="new-time"
+          required
+        />
       </div>
       <div class="mb-3">
-        <input type="date" class="form-control" name="route[date]" value="<%=ride.date%>" id="new-date" required />
+        <input
+          type="date"
+          class="form-control"
+          name="route[date]"
+          value="<%=ride.date%>"
+          id="new-date"
+          required
+        />
       </div>
       <div class="mb-3">
         <input
@@ -48,6 +62,16 @@
           placeholder="Available Seats"
           required
           min="1"
+        />
+      </div>
+      <div class="mb-3">
+        <input
+          type="price"
+          class="form-control"
+          name="route[price]"
+          value="<%=ride.price%>"
+          id="new-date"
+          required
         />
       </div>
       <div>

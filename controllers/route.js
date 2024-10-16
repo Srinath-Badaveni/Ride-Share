@@ -8,7 +8,7 @@ module.exports.index = async (req, res) => {
   currentDate.setMinutes(currentDate.getMinutes() + 330);
   const Routes = rides.filter(async (ride) => {
     const rideDate = ride.date
-    rideDate.setMinutes(rideDate.getMinutes() + convertToMinutes(ride.time));
+    // rideDate.date.setMinutes(rideDate.date.getMinutes() + convertToMinutes(rideDate.time)-330);
     if (ride.date < currentDate) {
       return await Route.findByIdAndDelete(ride._id);
     }
@@ -48,8 +48,6 @@ module.exports.index = async (req, res) => {
 
 module.exports.addNew = async (req, res) => {
   let sampleRoute = new Route(req.body.route);
-  console.log(sampleRoute.date)
-  console.log(sampleRoute.time)
   let currentDate = new Date();
   let maxDate = new Date();
   maxDate.setDate(currentDate.getDate() + 5);
@@ -58,6 +56,7 @@ module.exports.addNew = async (req, res) => {
     return res.redirect("/route/addNew");
   }
   sampleRoute.owner = req.user._id;
+  sampleRoute.date.setMinutes(sampleRoute.date.getMinutes() + convertToMinutes(sampleRoute.time));
   await sampleRoute.save();
   res.redirect("/route");
 };
@@ -66,7 +65,6 @@ module.exports.renderNew = (req, res) => {
   let currentDate = new Date();
   let maxDate = new Date();
   maxDate.setDate(currentDate.getDate() + 5);
-  console.log(maxDate);
   res.render("home/addRoute.ejs", { maxDate });
 };
 
@@ -82,7 +80,12 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.editRoute = async (req, res) => {
   const { id } = req.params;
-  const ride = await Route.findOneAndUpdate({ _id: id }, { ...req.body.route });
+  await Route.findOneAndUpdate({ _id: id }, { ...req.body.route });
+  const sampleRoute = await Route.findById(id)
+  console.log(sampleRoute)
+  sampleRoute.date.setMinutes(sampleRoute.date.getMinutes() + convertToMinutes(sampleRoute.time));
+  console.log(sampleRoute)
+  await sampleRoute.save()
   req.flash("success", "Route Edited successfully!!");
   res.redirect(`/route`);
 };
