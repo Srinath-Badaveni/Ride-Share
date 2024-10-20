@@ -20,7 +20,7 @@ module.exports.index = async (req, res) => {
       const expiredBookingIds = [];
       // Check each booking for expiration
       for (let booking of ride.tempBookings) {
-        if (currentDate > booking.expTime) {
+        if (Date.now() > booking.expTime) {
           seatsToAdd += booking.seats; // Add back expired seats
           expiredBookingIds.push(booking._id); // Collect expired booking IDs
         }
