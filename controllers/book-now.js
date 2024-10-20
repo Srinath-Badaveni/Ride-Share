@@ -92,11 +92,9 @@ module.exports.conformBooking = async (req, res) => {
     <h4><b>Contact Number</b>: ${newBooking.phone}</h4>
     <h4><b>seatsBooked</b>: ${newBooking.seatsBooked}</h4>`,
       };
-      if (new Date() < user[0].tempSeat.expTime) {
+      if (Date.now() < user[0].tempSeat.expTime) {
         await sendEmail(customerMailOptions); // Wait for the email to be sent
         await sendEmail(sellerMailOptions);
-      }
-      if (new Date() < user[0].tempSeat.expTime) {
         for (let booking of ride.tempBookings) {
           if (booking.userMail === newBooking.email) {
             ride.tempBookings.splice(booking, 1);
@@ -118,56 +116,56 @@ module.exports.conformBooking = async (req, res) => {
 
 module.exports.deleteBooking = async (req, res) => {
   let { id, bookingId } = req.params;
-const booking = await bookings.findById(bookingId);
-const route = await Route.findById(id).populate("owner");
-// Immediately invoked async function
-(async () => {
-  try {
-    const customerMailOptions = {
-      from: "rideshare.startup.com",
-      to: booking.email,
-      subject: "Your booking has been successfully canceled :(",
-      html: `<h2>Booking ride ID: ${booking._id} with ${booking.seatsBooked} seats.</h2>
+  const booking = await bookings.findById(bookingId);
+  const route = await Route.findById(id).populate("owner");
+  // Immediately invoked async function
+  (async () => {
+    try {
+      const customerMailOptions = {
+        from: "rideshare.startup.com",
+        to: booking.email,
+        subject: "Your booking has been successfully canceled :(",
+        html: `<h2>Booking ride ID: ${booking._id} with ${booking.seatsBooked} seats.</h2>
         <h4>Your ride details:</h4>
         <h4><b>Starting Location</b>: ${route.startLocation}</h4>
         <h4><b>Destination Location</b>: ${route.destinationLocation}</h4>
         <h4><b>Date</b>: ${route.date}</h4>
         <h4><b>Time</b>: ${route.time}</h4>
         <h1><b>Sorry for the inconvenience</b></h1>`,
-    };
+      };
 
-    const sellerMailOptions = {
-      from: "rideshare.startup.com",
-      to: route.owner.email,
-      subject: "Your ride has been canceled",
-      html: `<h3>Booking Details:</h3>
+      const sellerMailOptions = {
+        from: "rideshare.startup.com",
+        to: route.owner.email,
+        subject: "Your ride has been canceled",
+        html: `<h3>Booking Details:</h3>
         <h4><b>Name</b>: ${booking.name}</h4>
         <h4><b>Mail</b>: ${booking.email}</h4>
         <h4><b>Contact Number</b>: ${booking.phone}</h4>
         <h4><b>Seats Booked</b>: ${booking.seatsBooked}</h4>
         <h1>Sorry for the inconvenience</h1>`,
-    };
+      };
 
-    console.log("hi");
-    await sendEmail(customerMailOptions);
-    await sendEmail(sellerMailOptions);
-    console.log("bye");
+      console.log("hi");
+      await sendEmail(customerMailOptions);
+      await sendEmail(sellerMailOptions);
+      console.log("bye");
 
-    // Remove the booking and update the seats
-    await Route.findByIdAndUpdate(id, {
-      $pull: { bookings: bookingId },
-    });
-    await bookings.findByIdAndDelete(bookingId);
-    await Route.findByIdAndUpdate(id, {
-      seats: route.seats + booking.seatsBooked,
-    });
+      // Remove the booking and update the seats
+      await Route.findByIdAndUpdate(id, {
+        $pull: { bookings: bookingId },
+      });
+      await bookings.findByIdAndDelete(bookingId);
+      await Route.findByIdAndUpdate(id, {
+        seats: route.seats + booking.seatsBooked,
+      });
 
-    req.flash("success", "Booking canceled successfully!!");
-    res.redirect(`/bookings`);
-  } catch (err) {
-    console.error(err);  // Log the actual error
-    req.flash("error", "Some error occurred!");
-    res.redirect(`/bookings`);
-  }
-})();  // Immediately invoked function
+      req.flash("success", "Booking canceled successfully!!");
+      res.redirect(`/bookings`);
+    } catch (err) {
+      console.error(err); // Log the actual error
+      req.flash("error", "Some error occurred!");
+      res.redirect(`/bookings`);
+    }
+  })(); // Immediately invoked function
 };
