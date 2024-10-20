@@ -34,14 +34,9 @@ router.post('/verify-otp', async (req, res) => {
 
   // Check if OTP is correct and not expired
   const timestamp = new Date(user.otpExpiresAt).getTime()
+  console.log(user.otpExpiresAt)
   console.log(Date.now())
-  console.log(parseInt(otp, 10))
-  console.log(user.otp)
   if (user.otp !== parseInt(otp, 10) || timestamp < Date.now()) {
-    console.log(user.otp !== parseInt(otp, 10))
-    console.log(timestamp < Date.now())
-    console.log(timestamp)
-    await User.findByIdAndDelete(user._id)
     return res.status(400).json({ message: 'Invalid or expired OTP' });
   }
 
