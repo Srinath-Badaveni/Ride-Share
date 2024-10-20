@@ -77,6 +77,12 @@ app.use((req, res, next) => {
   next();
 });
 
+
+app.get('/',(req,res)=>{
+  res.render('home/root.ejs')
+})
+
+
 app.get("/bookings", async (req, res) => {
   const rides = await Route.find().populate("bookings");
   const myBookings = []

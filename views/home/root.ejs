@@ -1,0 +1,217 @@
+<% layout('./layouts/boilerPlate') -%>
+    <style>
+      /* Hero Section Styling */
+      .hero {
+        margin-top: 2rem;
+        background: url("https://img.freepik.com/free-photo/businesswoman-showing-her-smartphone-app-taxi-driver_23-2149236739.jpg?uid=R169388034&ga=GA1.1.1597240145.1724578264&semt=ais_hybrid")
+          no-repeat center center;
+        background-size: cover;
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+      }
+      .hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .hero p {
+        font-size: 1.2rem;
+      }
+      .Discover{
+        background-color: rgb(0, 0, 0);
+        padding: 0.8rem;
+        border-radius: 2rem;
+        color: rgb(0, 133, 228);
+      }
+
+      /* Features Section Styling */
+      .features-section {
+        padding: 3rem 0;
+        background: linear-gradient(to right, #f7f7f7, #e9f5fb);
+        background-size: cover;
+        background-position: center;
+      }
+      .feature {
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        transform: translateY(50px);
+        transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+      }
+      .feature.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      /* Custom Colors for Features */
+      .feature-1 {
+        background-color: #fffbf0;
+      }
+      .feature-2 {
+        background-color: #e0f7fa;
+      }
+      .feature-3 {
+        background-color: #f3e5f5;
+      }
+      .feature-4 {
+        background-color: #fce4ec;
+      }
+      .feature-5 {
+        background-color: #e8f5e9;
+      }
+      .feature-6 {
+        background-color: #fffde7;
+      }
+
+      /* Scroll to Features Button */
+      .scroll-btn {
+        margin-top: 2rem;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+      }
+      .scroll-btn:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  <body>
+   
+    <!-- Hero Section -->
+    <div class="hero text-center">
+      <div>
+        <h1>Revolutionizing Ride Sharing</h1>
+        <p>Safe, Fast, and Convenient Rides for Everyone</p>
+        <a href="/route" class="Discover">Discover Our Innovations</a>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section text-center">
+      <div class="container">
+        <h2 class="mb-4">Our Innovative Features</h2>
+        <div class="row mt-4">
+          <div class="col-md-4">
+            <div class="feature feature-1">
+              <h3>Real-Time Ride Matching</h3>
+              <p>
+                Our advanced matching algorithm pairs riders and drivers in
+                real-time, ensuring minimal wait times and optimized routes for
+                faster commutes. You'll always find a ride that fits your needs.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="feature feature-2">
+              <h3>Seamless Payments</h3>
+              <p>
+                Enjoy the convenience of integrated payment solutions. Whether
+                you're using credit cards, digital wallets, or even
+                cryptocurrencies, our platform supports fast, secure, and easy
+                transactions.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="feature feature-3">
+              <h3>Enhanced Safety Features</h3>
+              <p>
+                Our platform comes with built-in safety features like driver
+                verification, real-time GPS tracking, emergency assistance
+                buttons, and contactless ride options, ensuring your safety at
+                every step.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- New Features Row -->
+        <div class="row mt-4">
+          <div class="col-md-4">
+            <div class="feature feature-4">
+              <h3>Carbon Footprint Tracking</h3>
+              <p>
+                Track your environmental impact with our carbon footprint
+                tracking feature, designed to help you monitor and reduce
+                emissions during rides, contributing to a greener planet.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="feature feature-5">
+              <h3>Driver-Partner Rewards</h3>
+              <p>
+                Our platform rewards driver-partners with points and bonuses
+                based on ride quality, customer satisfaction, and eco-friendly
+                driving practices. Build a sustainable community of drivers.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="feature feature-6">
+              <h3>Community Ride-sharing</h3>
+              <p>
+                Join or create ride-sharing groups within your community.
+                Whether for work, school, or social events, our platform makes
+                it easy to share rides with people you know, reducing costs and
+                emissions.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Smooth Scroll Animation Script -->
+    <script>
+      // Debounce function to limit the rate at which a function can fire
+      function debounce(func, wait = 10, immediate = true) {
+        let timeout;
+        return function () {
+          const context = this,
+            args = arguments;
+          const later = function () {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+          };
+          const callNow = immediate && !timeout;
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+          if (callNow) func.apply(context, args);
+        };
+      }
+
+      // Function to check if an element is in the viewport
+      function isInViewport(element) {
+        const rect = element.getBoundingClientRect();
+        return (
+          rect.top >= 0 &&
+          rect.left >= 0 &&
+          rect.bottom <=
+            (window.innerHeight || document.documentElement.clientHeight) &&
+          rect.right <=
+            (window.innerWidth || document.documentElement.clientWidth)
+        );
+      }
+
+      // Scroll event listener with debounce for smoother animations
+      window.addEventListener(
+        "scroll",
+        debounce(function () {
+          const features = document.querySelectorAll(".feature");
+          features.forEach(function (feature) {
+            if (isInViewport(feature)) {
+              feature.classList.add("show");
+            }
+          });
+        })
+      );
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
