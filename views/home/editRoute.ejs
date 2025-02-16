@@ -19,6 +19,7 @@
           placeholder="Start Location"
           value="<%=ride.startLocation%>"
           required
+          readonly
         />
       </div>
       <div class="mb-3">
@@ -30,6 +31,7 @@
           value="<%=ride.destinationLocation%>"
           placeholder="Destination Location"
           required
+          readonly
         />
       </div>
       <div class="mb-3">
@@ -62,16 +64,6 @@
           placeholder="Available Seats"
           required
           min="1"
-        />
-      </div>
-      <div class="mb-3">
-        <input
-          type="price"
-          class="form-control"
-          name="route[price]"
-          value="<%=ride.price%>"
-          id="new-date"
-          required
         />
       </div>
       <div>

@@ -17,6 +17,7 @@ const route = require("./routes/route.js");
 const bookNow = require("./routes/book-now.js");
 const user = require("./routes/user.js");
 const { saveUrl } = require("./middleware.js");
+const { log } = require("console");
 
 app.use(methodOverride("_method"));
 app.use(express.urlencoded({ extended: true }));
@@ -24,6 +25,8 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
+app.use(express.json()); // Needed for parsing JSON body
+app.use(express.urlencoded({ extended: true })); // Needed for form data
 
 const dbUrl = process.env.ATLASDB_URL;
 main()
@@ -77,37 +80,71 @@ app.use((req, res, next) => {
   next();
 });
 
-
-app.get('/',(req,res)=>{
-  res.render('home/root.ejs')
-})
-
+app.get("/", (req, res) => {
+  res.render("home/root.ejs");
+});
 
 app.get("/bookings", async (req, res) => {
   const rides = await Route.find().populate("bookings");
-  const myBookings = []
-  const bookingId = []
-  rides.forEach(element => {
-    for(ride of element.bookings){
-      if(ride.email === req.user.email){
-        myBookings.push(element)
-        bookingId.push(ride._id)
+  const myBookings = [];
+  const bookingId = [];
+  rides.forEach((element) => {
+    for (ride of element.bookings) {
+      if (ride.email === req.user.email) {
+        myBookings.push(element);
+        bookingId.push(ride._id);
       }
-  }});
-  console.log(bookingId)
-  res.render("home/bookings.ejs",{myBookings,bookingId});
+    }
+  });
+  console.log(bookingId);
+  res.render("home/bookings.ejs", { myBookings, bookingId });
 });
 
-app.post("/search",async(req,res)=>{
-  const { start, dest } = req.body;
-  const rides = await Route.find({})
-  const Routes = rides.filter(
-    (ride) =>
-      ride.startLocation.toLowerCase().includes(start) &&
-      ride.destinationLocation.toLowerCase().includes(dest)
-  );
-  res.render("home/main.ejs", { Routes });
-})
+function haversineDistance(startCoords, destinationCoords) {
+  const R = 6371; // Radius of Earth in km
+    const dLat = (destinationCoords[0] - startCoords[0]) * (Math.PI / 180);
+    const dLon = (destinationCoords[1] - startCoords[1]) * (Math.PI / 180);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(startCoords[0] * (Math.PI / 180)) * Math.cos(destinationCoords[0] * (Math.PI / 180)) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+app.post("/search", async (req, res) => {
+  try {
+    console.log("🚀 Backend search request received");
+
+    const { startCoords, destinationCoords } = req.body;
+    if (!startCoords || !destinationCoords) {
+      return res.status(400).json({ error: "Missing required parameters!" });
+    }
+
+    const [lat, lng] = startCoords.split(",").map(Number);
+    let rides = await Route.find({});
+
+    console.log("🔍 Total rides found before filtering:", rides.length);
+
+    // Filter rides within 10km radius
+    Routes = rides.filter((ride) => {
+      if (!ride.startCoords) return false;
+      const rideCoords = ride.startCoords.split(",").map(Number);
+      console.log(rideCoords)
+      console.log([lat,lng])
+      const distance = haversineDistance([lat, lng], rideCoords);
+      return distance <= 10; // Keep only rides within 10km radius
+    });
+
+    console.log(`✅ Found ${Routes.length} rides within 10km radius.`);
+    console.log(Routes)
+    res.render('home/main',Routes); // ✅ Send JSON instead of rendering
+  } catch (error) {
+    console.error("❌ Error searching rides:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 app.use("/route", route);
 app.use("/book-now/:id", bookNow);
 app.use("/user", user);

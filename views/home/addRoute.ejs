@@ -3,33 +3,36 @@
 <section class="container d-flex justify-content-center mt-5">
   <div class="col-md-6">
     <h2 class="mb-4 text-center">Add Your Route</h2>
-    <form
-      id="add-route-form"
-      class="d-flex flex-column needs-validation"
-      method="POST"
-      action="/route"
-      novalidate
-    >
+    <form id="add-route-form" class="d-flex flex-column needs-validation" method="POST" action="/route" novalidate>
+      <!-- Map for Selecting Locations -->
+      <div id="map" style="width: 100%; height: 400px; margin-bottom: 15px"></div>
+
+      <!-- Start Location Input -->
       <div class="mb-3">
-        <input
-          type="text"
-          class="form-control"
-          name="route[startLocation]"
-          id="new-start-location"
-          placeholder="Start Location"
-          required
-        />
+        <input type="text" class="form-control" name="route[startLocation]" id="new-start-location" 
+          placeholder="Start Location" required readonly />
       </div>
+
+      <!-- Destination Location Input -->
       <div class="mb-3">
-        <input
-          type="text"
-          class="form-control"
-          name="route[destinationLocation]"
-          id="new-destination-location"
-          placeholder="Destination Location"
-          required
-        />
+        <input type="text" class="form-control" name="route[destinationLocation]" id="new-destination-location" 
+          placeholder="Destination Location" required readonly />
       </div>
+
+      <!-- Hidden Inputs for Coordinates -->
+      <input type="hidden" name="route[startCoords]" id="start-coords" />
+      <input type="hidden" name="route[destinationCoords]" id="destination-coords" />
+
+      <!-- Hidden Inputs for Pricing -->
+      <input type="hidden" name="route[ownerPrice]" id="owner-price" />
+      <input type="hidden" name="route[userPrice]" id="user-price" />
+
+      <!-- Confirmation Buttons -->
+      <div class="mb-3 d-flex justify-content-between">
+        <button type="button" id="confirm-start" class="btn btn-primary" disabled>Confirm Start</button>
+        <button type="button" id="confirm-destination" class="btn btn-warning" disabled>Confirm Destination</button>
+      </div>
+
       <div class="mb-3">
         <input type="time" class="form-control" name="route[time]" id="new-time" required />
       </div>
@@ -37,30 +40,121 @@
         <input type="date" class="form-control" name="route[date]" id="new-date" max="<%=maxDate%>" required />
       </div>
       <div class="mb-3">
-        <input
-          type="number"
-          class="form-control"
-          id="new-seats"
-          name="route[seats]"
-          placeholder="Available Seats"
-          required
-          min="1"
-        />
+        <input type="number" class="form-control" id="new-seats" name="route[seats]" placeholder="Available Seats" required min="1" />
       </div>
-      <div class="mb-3">
-        <input
-          type="number"
-          class="form-control"
-          id="new-seats"
-          name="route[price]"
-          placeholder="&#8377; Price/Seat"
-          required
-          min="1"
-        />
-      </div>
+
+      <!-- Price Display -->
+      <p id="earnings-info" class="text-center text-success"></p>
+      <p id="owner-price-display" class="text-center text-primary"></p>
+      <p id="user-price-display" class="text-center text-warning"></p>
+
       <div>
-        <button type="submit" class="btn btn-success w-100">Add</button>
+        <button type="submit" class="btn btn-success w-100" id="confirm-route" disabled>Confirm & Add</button>
       </div>
     </form>
   </div>
 </section>
+
+<!-- Mapbox Scripts -->
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+
+<script>
+  mapboxgl.accessToken = "pk.eyJ1Ijoic3JpbmF0aGJhZGF2ZW5pIiwiYSI6ImNtMTR0NWpwajAxa2kyaXM4cGoxaHc4d2sifQ.-Zt-8oU7AYlfO_EDoRXUoA";
+
+  const map = new mapboxgl.Map({
+    container: "map",
+    style: "mapbox://styles/mapbox/streets-v11",
+    center: [78.4867, 17.385],
+    zoom: 10,
+  });
+
+  let startMarker, destinationMarker;
+  let selectedStart = null, selectedDestination = null;
+
+  map.on("click", (event) => {
+    if (!selectedStart) {
+      setMarker(event.lngLat, "start");
+    } else if (!selectedDestination) {
+      setMarker(event.lngLat, "destination");
+    }
+  });
+
+  function setMarker(lngLat, type) {
+    if (type === "start") {
+      if (startMarker) startMarker.remove();
+      startMarker = new mapboxgl.Marker({ color: "blue" }).setLngLat(lngLat).addTo(map);
+      document.getElementById("start-coords").value = `${lngLat.lat},${lngLat.lng}`;
+      document.getElementById("confirm-start").disabled = false;
+    } else {
+      if (destinationMarker) destinationMarker.remove();
+      destinationMarker = new mapboxgl.Marker({ color: "red" }).setLngLat(lngLat).addTo(map);
+      document.getElementById("destination-coords").value = `${lngLat.lat},${lngLat.lng}`;
+      document.getElementById("confirm-destination").disabled = false;
+    }
+  }
+
+  document.getElementById("confirm-start").addEventListener("click", () => {
+    selectedStart = document.getElementById("start-coords").value;
+    fetchLocationName(selectedStart, "new-start-location");
+  });
+
+  document.getElementById("confirm-destination").addEventListener("click", () => {
+    selectedDestination = document.getElementById("destination-coords").value;
+    fetchLocationName(selectedDestination, "new-destination-location");
+    calculateDistance();
+  });
+
+  function fetchLocationName(coords, inputId) {
+    const [lat, lng] = coords.split(",");
+    fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxgl.accessToken}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.features.length > 0) {
+          let shortName = data.features[3].text; // ✅ Extract the shorter name
+          document.getElementById(inputId).value = shortName; 
+        }
+      })
+      .catch((error) => console.error("❌ Error fetching location name:", error));
+  }
+
+  function calculateDistance() {
+    const startCoords = document.getElementById("start-coords").value.split(",").map(Number);
+    const destinationCoords = document.getElementById("destination-coords").value.split(",").map(Number);
+
+    const R = 6371; // Radius of Earth in km
+    const dLat = (destinationCoords[0] - startCoords[0]) * (Math.PI / 180);
+    const dLon = (destinationCoords[1] - startCoords[1]) * (Math.PI / 180);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(startCoords[0] * (Math.PI / 180)) * Math.cos(destinationCoords[0] * (Math.PI / 180)) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+
+    function analyzeCostPerKm(distance) {
+      const baseFare = 10;
+      const shortDistanceCostPerKm = 10;
+      const longDistanceCostPerKm = 2;
+      const shortDistanceThreshold = 20;
+      const discountRate = 0.10;
+
+      let costPerKm = distance <= shortDistanceThreshold ? shortDistanceCostPerKm : longDistanceCostPerKm;
+      const variableCost = distance * costPerKm;
+      const userPrice = variableCost + variableCost * discountRate;
+
+      return {
+        distance: distance.toFixed(2),
+        ownerPrice: variableCost.toFixed(2),
+        userPrice: userPrice.toFixed(2),
+      };
+    }
+
+    const pricing = analyzeCostPerKm(distance);
+    document.getElementById("earnings-info").innerText = `Estimated Distance: ${pricing.distance} km`;
+    document.getElementById("owner-price").value = pricing.ownerPrice;
+    document.getElementById("user-price").value = pricing.userPrice;
+    document.getElementById("owner-price-display").innerText = `Owner Price: ₹${pricing.ownerPrice}`;
+    document.getElementById("user-price-display").innerText = `User Price: ₹${pricing.userPrice}`;
+    document.getElementById("confirm-route").disabled = false;
+  }
+</script>

@@ -12,32 +12,75 @@
             <li class="list-group-item"><strong>Date:</strong> <%= ride.date.toLocaleDateString('en-US', options) %></li>
             <li class="list-group-item"><strong>Time:</strong> <%= ride.time %></li>
             <li class="list-group-item"><strong>Available Seats:</strong> <%= ride.seats %></li>
-            <li class="list-group-item"><strong>Price(&#8377;):</strong> <%= ride.price %></li>
+            <li class="list-group-item"><strong>Price(&#8377;):</strong> <%= ride.userPrice %></li>
         </ul>
 
         <hr>
 
+        <!-- Map Section -->
+        <h2>Ride Route</h2>
+        <div id="map" style="width: 100%; height: 400px; margin-bottom: 15px"></div>
+        
+        <hr>
+
         <h2>User Information</h2>
-        <p><strong>Name:</strong> <%=ride.owner.username%></p>
+        <p><strong>Name:</strong> <%= ride.owner.username %></p>
         <p><strong>Rating:</strong> 5 Star</p>
-        <%if(ride.seats) {%>
+        <% if(ride.seats) { %>
         <h2>Booking Form</h2>
-        <form class="needs-validation" action="/book-now/<%= ride.id %>/conform" method="POST" novalidate>
+        <form class="needs-validation" action="/book-now/<%= ride.id %>/confirm" method="POST" novalidate>
             <input type="hidden" name="rideId" value="<%= ride.id %>">
             <div class="form-group">
                 <label for="name">Full Name</label>
                 <input type="text" name="name" class="form-control" required>
-                <label for="name">Contact Number</label>
+                <label for="phone">Contact Number</label>
                 <input type="number" name="phone" class="form-control" required>
                 <label for="email">Email</label>
-                <input type="" class="form-control" name="email" value="<%= currUser.email %>" readonly>
+                <input type="email" class="form-control" name="email" value="<%= currUser.email %>" readonly>
                 <label for="seats">Number of Seats:</label>
-                <input type="number" class="form-control" id="seats" name="seatsBooked" min="1" max="<%=ride.seats%>" required>
+                <input type="number" class="form-control" id="seats" name="seatsBooked" min="1" max="<%= ride.seats %>" required>
             </div>
             <br>
             <button type="submit" class="btn btn-primary">Confirm Booking</button>
         </form>
-        <%}%>
+        <% } %>
         <br>
     </div>
+
+    <!-- Mapbox Scripts -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+
+    <script>
+        mapboxgl.accessToken = "pk.eyJ1Ijoic3JpbmF0aGJhZGF2ZW5pIiwiYSI6ImNtMTR0NWpwajAxa2kyaXM4cGoxaHc4d2sifQ.-Zt-8oU7AYlfO_EDoRXUoA";
+        
+        const startCoords = "<%= ride.startCoords %>".split(',').map(Number);
+        const destinationCoords = "<%= ride.destinationCoords %>".split(',').map(Number);
+        
+        if (startCoords.length === 2 && destinationCoords.length === 2 && !isNaN(startCoords[0]) && !isNaN(startCoords[1]) && !isNaN(destinationCoords[0]) && !isNaN(destinationCoords[1])) {
+            const map = new mapboxgl.Map({
+                container: "map",
+                style: "mapbox://styles/mapbox/streets-v11",
+                center: startCoords.reverse(), // Reverse to [lng, lat]
+                zoom: 10
+            });
+            
+            new mapboxgl.Marker({ color: "blue" })
+                .setLngLat(startCoords)
+                .setPopup(new mapboxgl.Popup().setText("Start: <%= ride.startLocation %>"))
+                .addTo(map);
+            
+            new mapboxgl.Marker({ color: "red" })
+                .setLngLat(destinationCoords.reverse())
+                .setPopup(new mapboxgl.Popup().setText("Destination: <%= ride.destinationLocation %>"))
+                .addTo(map);
+
+            // Fit the map to show both locations
+            const bounds = new mapboxgl.LngLatBounds();
+            bounds.extend(startCoords).extend(destinationCoords);
+            map.fitBounds(bounds, { padding: 50 });
+        } else {
+            console.error("Invalid coordinates: ", startCoords, destinationCoords);
+        }
+    </script>
 </body>

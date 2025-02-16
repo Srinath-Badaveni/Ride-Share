@@ -23,7 +23,7 @@
                 <label for="seats">Number of Seats:</label>
                 <input type="number" class="form-control" value="<%=seatsBooked%>"  id="seats" name="booking[seatsBooked]" min="1" max="<%=ride.seats%>" required readonly>
                 <label for="name">Total Cost (&#8377;)</label>
-                <input type="text" name="booking[price]" value="<%=seatsBooked*ride.price %>" class="form-control" required readonly>
+                <input type="text" name="booking[price]" value="<%=seatsBooked*ride.userPrice %>" class="form-control" required readonly>
             </div>
             <br>
             <button type="submit" class="btn btn-primary">Confirm Booking</button>
