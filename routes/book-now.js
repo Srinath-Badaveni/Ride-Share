@@ -10,7 +10,7 @@ router
   .route("/")
   .get(checkExpiration,isLoggedIn,saveUrl, wrapasync(bookNowController.renderBookNow))
   .post(checkExpiration,isLoggedIn,saveUrl, wrapasync(bookNowController.conformBooking));
-router.route('/conform').post(bookNowController.booking)
+router.route('/confirm').post(bookNowController.booking)
 
 router.route('/delete/:bookingId').get(wrapasync(bookNowController.deleteBooking))
 
