@@ -156,7 +156,6 @@ module.exports.index = async (req, res) => {
       return ride.date > currentDate;
     }
   });
-  console.log(process.env.MAPBOX_KEY)
 
 
   res.render("home/main.ejs", { Routes,MAPBOXKEY:process.env.MAPBOX_KEY });
