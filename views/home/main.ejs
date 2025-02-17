@@ -81,7 +81,12 @@
       </form>
       <div
         id="map"
-        style="width: 100%; height: 400px; margin-bottom: 15px; margin-top: 15px;"
+        style="
+          width: 100%;
+          height: 400px;
+          margin-bottom: 15px;
+          margin-top: 15px;
+        "
       ></div>
     </div>
 
@@ -112,8 +117,7 @@
     </section>
 
     <script>
-      mapboxgl.accessToken =
-        "pk.eyJ1Ijoic3JpbmF0aGJhZGF2ZW5pIiwiYSI6ImNtMTR0NWpwajAxa2kyaXM4cGoxaHc4d2sifQ.-Zt-8oU7AYlfO_EDoRXUoA";
+      mapboxgl.accessToken = "<%=MAPBOXKEY%>";
 
       navigator.geolocation.getCurrentPosition(successLocation, errorLocation, {
         enableHighAccuracy: true,

@@ -114,6 +114,7 @@
 const Route = require("../models/route");
 const Booking = require("../models/bookings");
 const { convertToMinutes, calculateDistance } = require("../middleware");
+require("dotenv").config();
 
 module.exports.index = async (req, res) => {
   const rides = await Route.find({});
@@ -155,9 +156,10 @@ module.exports.index = async (req, res) => {
       return ride.date > currentDate;
     }
   });
-  console.log(Routes)
+  console.log(process.env.MAPBOX_KEY)
 
-  res.render("home/main.ejs", { Routes });
+
+  res.render("home/main.ejs", { Routes,MAPBOXKEY:process.env.MAPBOX_KEY });
 };
 
 // Add New Route
@@ -224,7 +226,7 @@ module.exports.renderNew = (req, res) => {
   let currentDate = new Date();
   let maxDate = new Date();
   maxDate.setDate(currentDate.getDate() + 5);
-  res.render("home/addRoute.ejs", { maxDate });
+  res.render("home/addRoute.ejs", { maxDate ,MAPBOXKEY:process.env.MAPBOX_KEY});
 };
 //render edit form
 module.exports.renderEditForm = async (req, res) => {

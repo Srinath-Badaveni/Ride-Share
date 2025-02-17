@@ -30,7 +30,7 @@ async function sendEmail(customerMailOptions) {
 module.exports.renderBookNow = async (req, res) => {
   const { id } = req.params;
   const ride = await Route.findById(id).populate("owner");
-  res.render("home/bookRide", { ride });
+  res.render("home/bookRide", { ride ,MAPBOXKEY:process.env.MAPBOX_KEY});
 };
 
 module.exports.booking = async (req, res) => {
