@@ -126,7 +126,7 @@ app.post("/search", async (req, res) => {
 
     console.log(`✅ Found ${Routes.length} rides within 10km radius.`);
     console.log(Routes)
-    res.render('home/main',Routes); // ✅ Send JSON instead of rendering
+    res.render('home/main',{Routes,MAPBOXKEY:process.env.MAPBOX_KEY }); // ✅ Send JSON instead of rendering
   } catch (error) {
     console.error("❌ Error searching rides:", error);
     res.status(500).json({ error: "Internal Server Error" });
