@@ -10,7 +10,7 @@ const routeSchema = new mongoose.Schema(
     destinationCoords: { type: String, required: true, trim: true, default: "0,0" },
     time: { type: String, required: true },
     date: { type: Date, required: true },
-    seats: { type: Number, required: true, min: 1, default: 1 }, // Ensure a valid seat count
+    seats: { type: Number, required: true, min:0, default: 1 }, // Ensure a valid seat count
     ownerPrice:{type:Number,required:true,min:1,default:1},
     userPrice:{type:Number,required:true,min:1,default:1},// Prevent validation errors
     owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
